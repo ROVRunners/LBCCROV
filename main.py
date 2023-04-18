@@ -1,7 +1,8 @@
 import cv2
+import serial
 
 
-def get_available_cameras(max_cameras=4):
+def get_available_cameras(max_cameras: int = 4) -> list:
     available_cameras = []
     for i in range(max_cameras):
         cap = cv2.VideoCapture(i)
