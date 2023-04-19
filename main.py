@@ -1,5 +1,45 @@
+import os
+import pkg_resources
+import sys
+
+
+# Initialization
+DEPENDENCY = "pyserial"
+try:
+    pkg_resources.require(DEPENDENCY)
+except pkg_resources.DistributionNotFound:
+    os.system(f'pip install {DEPENDENCY}')
+    os.system(f'python -m pip install {DEPENDENCY}')
+    os.system(f'python3 -m pip install {DEPENDENCY}')
+    os.system(f'py -m pip install {DEPENDENCY}')
+
+# Initialization
+DEPENDENCY = "opencv-python"
+try:
+    pkg_resources.require(DEPENDENCY)
+except pkg_resources.DistributionNotFound:
+    os.system(f'pip install {DEPENDENCY}')
+    os.system(f'python -m pip install {DEPENDENCY}')
+    os.system(f'python3 -m pip install {DEPENDENCY}')
+    os.system(f'py -m pip install {DEPENDENCY}')
+
 import cv2
 import serial
+
+
+ports = serial.tools.list_ports.comports()
+port = None
+if len(ports) > 0:
+    port = ports[0].device
+    print(f"Using {port} for serial communication.")
+else:
+    print("No serial port found.")
+
+if port is None:
+    print("No ports!")
+    sys.exit()
+else:
+    ser = serial.Serial(port, baudrate=9600)
 
 
 def get_available_cameras(max_cameras: int = 4) -> list:
@@ -72,6 +112,8 @@ else:
                         print("Camera 1 - Deep Red: Move down by {} pixels".format(abs(dy)))
                     elif dy < 0:
                         print("Camera 1 - Deep Red: Move up by {} pixels".format(abs(dy)))
+                    sending = f"{dx} {dy}"
+                    ser.write(bytes(sending))
 
         # Display the frames with the deep red color, contours, and center points
         cv2.imshow("Camera 1 - Deep Red", frame1)

@@ -32,9 +32,9 @@ int count_arr[] = {1, 1, 2, 3};
 int countbut_arr[] = {1,1,2};
 
 void setup() {  
-  Serial.begin(9600);//allows serial moniter
-  ps2x.config_gamepad(5,3,6,2, false, false); //(clock, command, attention, data, Pressures, Rumble)
-  Ethernet.begin(mac,localIp);    // static ip version
+  Serial.begin(9600); // Allows serial moniter
+  ps2x.config_gamepad(5,3,6,2, false, false); // (clock, command, attention, data, Pressures, Rumble)
+  Ethernet.begin(mac,localIp);    // Static IP version
   Ethernet.begin(mac,ip);
   Udp.begin(port);
   Udp.begin(localPort);
@@ -44,8 +44,8 @@ void setup() {
 
 void loop() {
   timer1 = millis();
-  read_PS2();     //reads the PS2 values and adjusts the analog stick values to useful ranges
-  buttons(); //reads PS2 button values
+  read_PS2(); // Reads the PS2 values and adjusts the analog stick values to useful ranges
+  buttons(); // Reads PS2 button values
   fillmessage();  //fills the array that is to be sent
   sendmessage();  //sends the array to the slave arduino
   //print_sent(); //prints out all the information to be sent in the array
@@ -128,6 +128,8 @@ void read_PS2(){
   LXC = check_count(LX);
   RYC = check_count(RY);
   RXC = check_count(RX);
+
+  if (ps2x.Button(PSB_L1) && ps2x.Button(PSB_R1)) {}
 
   count = count_arr[LYC + LXC + RXC]; //Counts the number of inputs being used 
   
