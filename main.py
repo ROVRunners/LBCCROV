@@ -25,7 +25,7 @@ except pkg_resources.DistributionNotFound:
 
 import cv2
 import serial
-
+import serial.tools.list_ports
 
 ports = serial.tools.list_ports.comports()
 port = None
