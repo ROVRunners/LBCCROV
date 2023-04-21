@@ -1,16 +1,16 @@
 #include <PS2X_lib.h> // Bill Porter's PS2 Library
 #include <Ethernet.h>
 #include <EthernetUdp.h>
-#define SD_SS 4//sets up ethernet communication ports, don't need to change this part
+#define SD_SS 4 // Sets up ethernet communication ports, don't need to change this part
 
 
-//general Ethernet object declarations
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };//connection for ethernet
-IPAddress localIp(192, 168, 1, 251);    // local ip address
-IPAddress destIp(192, 168, 1, 15);      // destination ip address
+// General Ethernet object declarations
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; //connection for ethernet
+IPAddress localIp(192, 168, 1, 251); // local ip address
+IPAddress destIp(192, 168, 1, 15); // destination ip address
 IPAddress ip(192, 168, 1, 15);
 IPAddress remIp(92, 168, 1, 176);
-unsigned int localPort = 5678;      // local port to listen on
+unsigned int localPort = 5678; // local port to listen on
 unsigned int port = 5678;               // destination port
 
 int count; // amount of inputs

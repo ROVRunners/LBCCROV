@@ -24,7 +24,7 @@ except pkg_resources.DistributionNotFound:
     os.system(f'py -m pip install {DEPENDENCY}')
 
 import cv2
-import serial
+import serial.tools.list_ports
 
 
 ports = serial.tools.list_ports.comports()
@@ -37,7 +37,7 @@ else:
 
 if port is None:
     print("No ports!")
-    sys.exit()
+    # sys.exit()
 else:
     ser = serial.Serial(port, baudrate=9600)
 
