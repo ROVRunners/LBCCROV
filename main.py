@@ -112,8 +112,8 @@ else:
                         print("Camera 1 - Deep Red: Move down by {} pixels".format(abs(dy)))
                     elif dy < 0:
                         print("Camera 1 - Deep Red: Move up by {} pixels".format(abs(dy)))
-                    sending = f"{dx} {dy}"
-                    ser.write(bytes(sending))
+
+                    ser.write(bytes([dy, dx]))
 
         # Display the frames with the deep red color, contours, and center points
         cv2.imshow("Camera 1 - Deep Red", frame1)

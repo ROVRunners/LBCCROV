@@ -23,22 +23,24 @@ const int serverPort = 4080;
 bool lasers = false, tilt = false, sensors = false;
 int timer1;
 int timer2;
-const byte arraylength = 7, maximum = 255, minimum = 0, middle = (maximum-minimum)/2, deadzone = 30;
+const byte arraylength = 7, maximum = 255, minimum = 0, middle = (maximum-minimum) / 2, deadzone = 30;
 byte message[arraylength], packetBuffer[arraylength], offset = 10;
-int left_magnitude, right_magnitude, LY, LYC, LX, LXC, RY, RYC, RX, RXC, L1R1,LR1,countbut, mag, temperature, i;
+int left_magnitude, right_magnitude, LY, LYC, LX, LXC, RY, RYC, RX, RXC, L1R1, LR1,countbut, mag, temperature, i;
 float depth;
 
 int count_arr[] = {1, 1, 2, 3};
 int countbut_arr[] = {1,1,2};
 
+bool controller = true
+bool toggle = false
+
 void setup() {  
   Serial.begin(9600); // Allows serial moniter
-  ps2x.config_gamepad(5,3,6,2, false, false); // (clock, command, attention, data, Pressures, Rumble)
-  Ethernet.begin(mac,localIp);    // Static IP version
-  Ethernet.begin(mac,ip);
+  ps2x.config_gamepad(5, 3, 6, 2, false, false); // (clock, command, attention, data, Pressures, Rumble)
+  Ethernet.begin(mac, localIp);    // Static IP version
+  Ethernet.begin(mac, ip);
   Udp.begin(port);
   Udp.begin(localPort);
-  Serial.begin(9600);
   
 }
 
@@ -56,13 +58,13 @@ void loop() {
 
 void fillmessage(){
   //fills the array with controller values that will be sent over ethernet
-  message[0] = LX;
-  message[1] = LY;
-  message[2] = RX;
-  message[3] = RY;
+  message[0] = LX; // Strafe
+  message[1] = LY; // forwards/backwards
+  message[2] = RX; // Turn
+  message[3] = RY; // Tilt forwards/back
   message[4] = count; 
-  message[5] = L1R1;
-  message[6] = countbut;
+  message[5] = L1R1; // Up/down
+  message[6] = countbut; 
 }
 
 void sendmessage(){//sends the message
@@ -112,13 +114,42 @@ int check_deadzone(int controller_value){
 }
 
 void read_PS2(){
-  ps2x.read_gamepad(); //Needs to be called at least once a second
-  
-  LY = ps2x.Analog(PSS_LY); //left Stick Up and Down  //Analog Stick readings
-  LX = ps2x.Analog(PSS_LX); //Left Stick Left and Right
-  RY = ps2x.Analog(PSS_RY); //Right Stick Up and Down
-  RX = ps2x.Analog(PSS_RX); //Right Stick Left and Right
-  
+  if controller {
+    ps2x.read_gamepad(); //Needs to be called at least once a second
+    
+    LY = ps2x.Analog(PSS_LY); //left Stick Up and Down  //Analog Stick readings
+    LX = ps2x.Analog(PSS_LX); //Left Stick Left and Right
+    RY = ps2x.Analog(PSS_RY); //Right Stick Up and Down
+    RX = ps2x.Analog(PSS_RX); //Right Stick Left and Right
+  }
+  else {
+    if (Serial.available() >= 2) {
+      int num1 = Serial.read();
+      int num2 = Serial.read();
+
+      LY = 255; //left Stick Up and Down  //Analog Stick readings
+      LX = 128; //Left Stick Left and Right
+      RY = 128 * 2 * num1; //Right Stick Up and Down
+      RX = 128 * 2 * num2; //Right Stick Left and Right
+    }
+    else {
+      LY = 128; //left Stick Up and Down  //Analog Stick readings
+      LX = 128; //Left Stick Left and Right
+      RY = 128; //Right Stick Up and Down
+      RX = 128; //Right Stick Left and Right
+    }
+  }
+
+  if (ps2x.Button(PSB_L1) && ps2x.Button(PSB_R1) && ps2x.Button(PSB_START)) {
+    if !toggle {
+      controller = !controller
+      toggle = true
+    }
+  }
+  else {
+    toggle = false
+  }
+    
   LY = check_deadzone(LY);//sets to Middle if it's within a certain range
   LX = check_deadzone(LX);
   RY = check_deadzone(RY);
@@ -128,8 +159,6 @@ void read_PS2(){
   LXC = check_count(LX);
   RYC = check_count(RY);
   RXC = check_count(RX);
-
-  if (ps2x.Button(PSB_L1) && ps2x.Button(PSB_R1)) {}
 
   count = count_arr[LYC + LXC + RXC]; //Counts the number of inputs being used 
   
