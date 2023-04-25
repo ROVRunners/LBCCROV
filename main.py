@@ -42,13 +42,13 @@ else:
 
 
 def get_available_cameras(max_cameras: int = 4) -> list:
-    available_cameras = []
-    for i in range(max_cameras):
+    cameras = []
+    for _ in range(max_cameras):
         cap = cv2.VideoCapture(i)
         if cap.isOpened():
-            available_cameras.append(i)
+            cameras.append(i)
             cap.release()
-    return available_cameras
+    return cameras
 
 
 available_cameras = get_available_cameras()

@@ -34,9 +34,9 @@ int stick_value, go, reverse, up_down;
 int a, b, c, d, e, f;// value from the analog sticks from the controller
 
 int i, j;
-byte movement, lasers, tilt, sense;//determines what direction the ROV needs to go
-float thruster_adjust, temp, pH_value, initial_depth, depth;//Changes the % of full thrust the
-byte packetBuffer[arraylength], message[arraylength];//array that is recieved and
+byte movement, lasers, tilt, sense; // Determines what direction the ROV needs to go
+float thruster_adjust, temp, pH_value, initial_depth, depth; // Changes the % of full thrust the
+byte packetBuffer[arraylength], message[arraylength]; // Array that is recieved and
 
 
 void setup(){
@@ -77,7 +77,7 @@ void recieve(){//recieves data from ethernet and puts it in packetBuffer array
   IPAddress remote = Udp.remoteIP();
   Udp.read(packetBuffer,arraylength);
 
-  int LX, LY, RX, RY, count,L1R1,countbut;
+  int LX, LY, RX, RY, count, L1R1, countbut;
   LX = packetBuffer[0];
   LY = packetBuffer[1];
   RX = packetBuffer[2];
@@ -127,6 +127,6 @@ void print_values(){
 }
 
 int Remap(int controller_value, int orientation){ // A function which remaps the controller input from a range of 0-255
-  int thruster_value = (controller_value - middle)*(ScaleFactor)*orientation; //This function converts it to a range from -300 to 300
-  return thruster_value;                                                      //This is used to orientate the thrusters thrust and increase
-}                                                                             //the values to the needed range
+  int thruster_value = (controller_value - middle)*(ScaleFactor)*orientation; // This function converts it to a range from -300 to 300
+  return thruster_value;                                                      // This is used to orientate the thrusters thrust and increase
+}                                                                             // the values to the needed range
