@@ -34,9 +34,9 @@ int stick_value, go, reverse, up_down;
 int a, b, c, d, e, f;// value from the analog sticks from the controller
 
 int i, j;
-byte movement, lasers, tilt, sense; // Determines what direction the ROV needs to go
-float thruster_adjust, temp, pH_value, initial_depth, depth; // Changes the % of full thrust the
-byte packetBuffer[arraylength], message[arraylength]; // Array that is recieved and
+byte movement, lasers, tilt, sense; // Determines what direction the ROV needs to go.
+float thruster_adjust, temp, pH_value, initial_depth, depth; // Changes the % of full thrust the motors use.
+byte packetBuffer[arraylength], message[arraylength]; // Array that is recieved and output message.
 
 
 void setup(){
