@@ -1,6 +1,5 @@
 import os
 import pkg_resources
-import sys
 
 
 # Initialization
@@ -90,7 +89,8 @@ else:
         # Find the contours of the deep red color in each frame
         contours1, _ = cv2.findContours(mask1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Find the center point of the contours and calculate the distance from the center of the screen
+        # Find the center point of the contours and calculate
+        # the distance from the center of the screen
         for i, cnt in enumerate(contours1):
             area = cv2.contourArea(cnt)
             if area >= 500:
@@ -101,16 +101,20 @@ else:
                     cv2.drawContours(frame1, contours1, i, (0, 255, 0), 3)
                     cv2.circle(frame1, (cx, cy), 3, (0, 0, 255), -1)
                     height, width, _ = frame1.shape
-                    dx = cx - width / 2
-                    dy = cy - height / 2
+                    dx = cx / (width / 2) - 1
+                    dy = cy / (height / 2) - 1
                     if dx > 0:
-                        print("Camera 1 - Deep Red: Move right by {} pixels".format(abs(dx)))
+                        print(f"Camera 1 - Deep Red: Move right by {dx}% of the screen")
                     elif dx < 0:
-                        print("Camera 1 - Deep Red: Move left by {} pixels".format(abs(dx)))
+                        print(f"Camera 1 - Deep Red: Move left by {dx}% of the screen")
+                    elif dx == 0:
+                        print(f"Camera 1 - Deep Red: Horizontally centered in the screen")
                     if dy > 0:
-                        print("Camera 1 - Deep Red: Move down by {} pixels".format(abs(dy)))
+                        print(f"Camera 1 - Deep Red: Move down by {dy}% of the screen")
                     elif dy < 0:
-                        print("Camera 1 - Deep Red: Move up by {} pixels".format(abs(dy)))
+                        print(f"Camera 1 - Deep Red: Move up by {dy}% of the screen")
+                    elif dy == 0:
+                        print(f"Camera 1 - Deep Red: Vertically centered in the screen")
 
                     ser.write(bytes([dy, dx]))
 
