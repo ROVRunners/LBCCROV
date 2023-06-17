@@ -1,6 +1,5 @@
 import os
 import pkg_resources
-import sys
 
 
 def display_contour(cnt, contours, ser):
@@ -74,7 +73,7 @@ else:
 
 
 def get_available_cameras(max_cameras: int = 4) -> list:
-    cameras = []
+    available_cameras = []
     for i in range(max_cameras):
         cap = cv2.VideoCapture(i)
         if cap.isOpened():
@@ -126,25 +125,29 @@ else:
         # Find the contours of the deep red color in each frame
         contours1, _ = cv2.findContours(mask1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-
-        # Define the lower and upper bounds of the deep red color in HSV color space
-        lower_red = (300, 0, 0)
-        upper_red = (360, 255, 255)
-        # lower_red = (0, 105, 90)
-        # upper_red = (25, 155, 175)
-
-        # Create a mask that isolates the deep red color in each frame
-        mask2 = cv2.inRange(hsv1, lower_red, upper_red)
-
-        # Find the contours of the deep red color in each frame
-        contours2, _ = cv2.findContours(mask2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-
         # Find the center point of the contours and calculate the distance from the center of the screen
         for i, cnt in enumerate(contours1):
-            display_contour(cnt, contours1, ser)
-        # for i, cnt in enumerate(contours2):
-        #     display_contour(cnt, contours2)
+            area = cv2.contourArea(cnt)
+            if area >= 500:
+                M = cv2.moments(cnt)
+                if M["m00"] != 0:
+                    cx = int(M["m10"] / M["m00"])
+                    cy = int(M["m01"] / M["m00"])
+                    cv2.drawContours(frame1, contours1, i, (0, 255, 0), 3)
+                    cv2.circle(frame1, (cx, cy), 3, (0, 0, 255), -1)
+                    height, width, _ = frame1.shape
+                    dx = cx - width / 2
+                    dy = cy - height / 2
+                    if dx > 0:
+                        print("Camera 1 - Deep Red: Move right by {} pixels".format(abs(dx)))
+                    elif dx < 0:
+                        print("Camera 1 - Deep Red: Move left by {} pixels".format(abs(dx)))
+                    if dy > 0:
+                        print("Camera 1 - Deep Red: Move down by {} pixels".format(abs(dy)))
+                    elif dy < 0:
+                        print("Camera 1 - Deep Red: Move up by {} pixels".format(abs(dy)))
+
+                    ser.write(bytes([dy, dx]))
 
         # Display the frames with the deep red color, contours, and center points
         cv2.imshow("Camera 1 - Deep Red", frame1)
