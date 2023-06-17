@@ -25,14 +25,14 @@ int timer1;
 int timer2;
 const byte arraylength = 7, maximum = 255, minimum = 0, middle = (maximum-minimum) / 2, deadzone = 30;
 byte message[arraylength], packetBuffer[arraylength], offset = 10;
-int left_magnitude, right_magnitude, LY, LYC, LX, LXC, RY, RYC, RX, RXC, L1R1, LR1,countbut, mag, temperature, i;
+int left_magnitude, right_magnitude, LY, LYC, LX, LXC, RY, RYC, RX, RXC, L1R1, LR1, countbut, mag, temperature, i;
 float depth;
 
 int count_arr[] = {1, 1, 2, 3};
 int countbut_arr[] = {1,1,2};
 
-bool controller = true
-bool toggle = false
+bool controller = true;
+bool toggle = false;
 
 void setup() {  
   Serial.begin(9600); // Allows serial moniter
@@ -114,69 +114,74 @@ int check_deadzone(int controller_value){
 }
 
 void read_PS2(){
-  if controller {
-    ps2x.read_gamepad(); //Needs to be called at least once a second
+  if (controller) {
+    ps2x.read_gamepad(); // Needs to be called at least once a second
     
-    LY = ps2x.Analog(PSS_LY); //left Stick Up and Down  //Analog Stick readings
-    LX = ps2x.Analog(PSS_LX); //Left Stick Left and Right
-    RY = ps2x.Analog(PSS_RY); //Right Stick Up and Down
-    RX = ps2x.Analog(PSS_RX); //Right Stick Left and Right
+    LY = ps2x.Analog(PSS_LY); // Left Stick Up and Down  // Analog Stick readings
+    LX = ps2x.Analog(PSS_LX); // Left Stick Left and Right
+    RY = ps2x.Analog(PSS_RY); // Right Stick Up and Down
+    RX = ps2x.Analog(PSS_RX); // Right Stick Left and Right
   }
   else {
     if (Serial.available() >= 2) {
       int num1 = Serial.read();
       int num2 = Serial.read();
 
-      LY = 255; //left Stick Up and Down  //Analog Stick readings
-      LX = 128; //Left Stick Left and Right
-      RY = 128 * 2 * num1; //Right Stick Up and Down
-      RX = 128 * 2 * num2; //Right Stick Left and Right
+      LY = 0; // Left Stick Up and Down  // Analog Stick readings
+      LX = 128; // Left Stick Left and Right
+      RY = 128; // Right Stick Up and Down
+      RX = num2; // Right Stick Left and Right
+
+      // Up/Down
+      LR1 = 1;
+      L1R1=num1;
+      countbut = countbut_arr[RYC+LR1];
     }
     else {
-      LY = 128; //left Stick Up and Down  //Analog Stick readings
-      LX = 128; //Left Stick Left and Right
-      RY = 128; //Right Stick Up and Down
-      RX = 128; //Right Stick Left and Right
+      LY = 128; // Left Stick Up and Down  // Analog Stick readings
+      LX = 128; // Left Stick Left and Right
+      RY = 128; // Right Stick Up and Down
+      RX = 128; // Right Stick Left and Right
     }
-  }
-
-  if (ps2x.Button(PSB_L1) && ps2x.Button(PSB_R1) && ps2x.Button(PSB_START)) {
-    if !toggle {
-      controller = !controller
-      toggle = true
-    }
-  }
-  else {
-    toggle = false
   }
     
-  LY = check_deadzone(LY);//sets to Middle if it's within a certain range
+  LY = check_deadzone(LY);// Sets to Middle if it's within a certain range
   LX = check_deadzone(LX);
   RY = check_deadzone(RY);
   RX = check_deadzone(RX);
 
-  LYC = check_count(LY); // toggles the counters between 1 and 0
+  LYC = check_count(LY); // Toggles the counters between 1 and 0
   LXC = check_count(LX);
   RYC = check_count(RY);
   RXC = check_count(RX);
 
-  count = count_arr[LYC + LXC + RXC]; //Counts the number of inputs being used 
+  count = count_arr[LYC + LXC + RXC]; // Counts the number of inputs being used 
   
 }
 
-void buttons(){ //A function to go and check if any buttons on the controller have been pressed
+void buttons(){ // A function to go and check if any buttons on the controller have been pressed
   ps2x.read_gamepad();
-  if (ps2x.Button(PSB_L1)){ // the ps2x.Button() function returns true or false depending if the button has been pressed
-    L1R1=minimum; //Value to represent full down
-    LR1 = 1; //Counter variable so multiple inputs can be used
-  } 
-  else if (ps2x.Button(PSB_R1)){
-    L1R1=maximum; // Value to represent full up
-    LR1 = 1;
-  } else{
-    L1R1=middle;
+  if (controller) {
+    if (ps2x.Button(PSB_L1)){ // The ps2x.Button() function returns true or false depending if the button has been pressed
+      L1R1=minimum; // Value to represent full down
+      LR1 = 1; // Counter variable so multiple inputs can be used
+    } 
+    else if (ps2x.Button(PSB_R1)){
+      L1R1=maximum; // Value to represent full up
+      LR1 = 1;
+    } else{
+      L1R1=middle;
+    }
+    countbut = countbut_arr[RYC+LR1];
   }
-  countbut = countbut_arr[RYC+LR1];
+
+  if (ps2x.Button(PSB_START)) {
+    if (!toggle) {
+      controller = !controller;
+      toggle = true;
+    }
   }
+  else toggle = false;
+}
   
   
