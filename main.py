@@ -1,3 +1,5 @@
+import serial.tools.list_ports
+import cv2
 import os
 import pkg_resources
 
@@ -22,8 +24,6 @@ except pkg_resources.DistributionNotFound:
     os.system(f'python3 -m pip install {DEPENDENCY}')
     os.system(f'py -m pip install {DEPENDENCY}')
 
-import cv2
-import serial.tools.list_ports
 
 ports = serial.tools.list_ports.comports()
 port = None
@@ -80,20 +80,21 @@ else:
         hsv1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2HSV)
 
         # Define the lower and upper bounds of the deep red color in HSV color space
-        lower_red = (170, 100, 50)
-        upper_red = (180, 255, 255)
+        lower_red = (0, 20, 10)
+        upper_red = (35, 255, 155)
 
         # Create a mask that isolates the deep red color in each frame
         mask1 = cv2.inRange(hsv1, lower_red, upper_red)
 
         # Find the contours of the deep red color in each frame
-        contours1, _ = cv2.findContours(mask1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours1, _ = cv2.findContours(
+            mask1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # Find the center point of the contours and calculate
         # the distance from the center of the screen
         for i, cnt in enumerate(contours1):
             area = cv2.contourArea(cnt)
-            if area >= 500:
+            if area >= 10:
                 M = cv2.moments(cnt)
                 if M["m00"] != 0:
                     cx = int(M["m10"] / M["m00"])
@@ -104,19 +105,39 @@ else:
                     dx = cx / (width / 2) - 1
                     dy = cy / (height / 2) - 1
                     if dx > 0:
-                        print(f"Camera 1 - Deep Red: Move right by {dx}% of the screen")
+                        print(
+                            f"Camera 1 - Deep Red: Move right by {dx}% of the screen")
                     elif dx < 0:
-                        print(f"Camera 1 - Deep Red: Move left by {dx}% of the screen")
+                        print(
+                            f"Camera 1 - Deep Red: Move left by {dx}% of the screen")
                     elif dx == 0:
-                        print(f"Camera 1 - Deep Red: Horizontally centered in the screen")
+                        print(
+                            f"Camera 1 - Deep Red: Horizontally centered in the screen")
                     if dy > 0:
-                        print(f"Camera 1 - Deep Red: Move down by {dy}% of the screen")
+                        print(
+                            f"Camera 1 - Deep Red: Move down by {dy}% of the screen")
                     elif dy < 0:
-                        print(f"Camera 1 - Deep Red: Move up by {dy}% of the screen")
+                        print(
+                            f"Camera 1 - Deep Red: Move up by {dy}% of the screen")
                     elif dy == 0:
-                        print(f"Camera 1 - Deep Red: Vertically centered in the screen")
+                        print(
+                            f"Camera 1 - Deep Red: Vertically centered in the screen")
 
-                    ser.write(bytes([dy, dx]))
+                    print("X: " + str(int(cx / width * 255)))
+                    print("Y: " + str(int(cy / height * 255)))
+
+                    DEADZONE = 30
+                    MAX = 255
+                    MIN = 0
+                    MID = (MAX - MIN) / 2
+
+                    cx2 = int(cx / width * MAX)
+                    cy2 = int(cy / height * MAX)
+
+                    sendx = MAX if cx2 > MID + DEADZONE else 0 if cx2 < MID - DEADZONE else MID
+                    sendy = MAX if cy2 > MID + DEADZONE else 0 if cy2 < MID - DEADZONE else MID
+
+                    ser.write(bytes([sendy, sendx]))
 
         # Display the frames with the deep red color, contours, and center points
         cv2.imshow("Camera 1 - Deep Red", frame1)

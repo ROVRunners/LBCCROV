@@ -1,5 +1,5 @@
 {
-    "board": "arduino:avr:uno",
+    "board": "arduino:avr:ethernet",
     "port": "COM7",
     "sketch": "ROV_Top_FullMotion_1-19-2023\\ROV_Top_FullMotion_1-19-2023.ino"
 }
