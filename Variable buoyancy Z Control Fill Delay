@@ -1,5 +1,5 @@
-// constants won't change. They're used here to set pin numbers:
-const int buttonPin1 = 2;  // the number of the pushbutton pin
+// Constants won't change. They're used here to set pin numbers:
+const int buttonPin1 = 2;  // The number of the pushbutton pin
 const int buttonPin2 = 4;
 int relay1 = 6; // Plug the relay into Digital Pin 13
 int relay2 = 10; // Plug the relay into Digital Pin 13
@@ -9,8 +9,8 @@ float currentD;
 int inCurrentD;
 int goalD=10; // m *100
 
-// variables will change:
-int buttonState1 = 0;  // variable for reading the pushbutton status
+// Variables will change:
+int buttonState1 = 0;  // Variable for reading the pushbutton status
 int buttonState2 = 0;
 
 #include <Wire.h>
@@ -21,10 +21,10 @@ MS5837 sensor;
 
 
 void setup() {
-  // initialize the LED pin as an output:
+  // Initialize the LED pin as an output:
   pinMode(relay1, OUTPUT);
   pinMode(relay2, OUTPUT);
-  // initialize the pushbutton pin as an input:
+  // Initialize the pushbutton pin as an input:
   pinMode(buttonPin1, INPUT);
   pinMode(buttonPin1, INPUT);
 
@@ -56,14 +56,14 @@ void setup() {
 }
 
 void loop() {
-  // read the state of the pushbutton value:
+  // Read the state of the pushbutton value:
   buttonState1 = digitalRead(buttonPin1);
   buttonState2 = digitalRead(buttonPin2);
   sensor.read();
   currentD = sensor.depth();
-  inCurrentD = round(currentD*100); // units of m*100
+  inCurrentD = round(currentD * 100); // Units of m*100
 
-  // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
+  // Check if the pushbutton is pressed. If it is, the buttonState is HIGH:
   if (buttonState1 == HIGH) {
     goalD += 5; // Turn the relay on
   } 
@@ -74,7 +74,7 @@ void loop() {
     digitalWrite(relay2, HIGH); // Turn the relay on
     digitalWrite(relay1, LOW); // Turn the relay Off
     delay(fillDelay);
-  } else if (inCurrentD>goalD) {
+  } else if (inCurrentD > goalD) {
     // turn LED off:
     digitalWrite(relay1, HIGH); // Turn the relay On
     digitalWrite(relay2, LOW); // Turn the relay Off
