@@ -1,16 +1,16 @@
-// Constants won't change. They're used here to set pin numbers:
-const int buttonPin1 = 2;  // The number of the pushbutton pin
+// constants won't change. They're used here to set pin numbers:
+const int buttonPin1 = 2;  // the number of the pushbutton pin
 const int buttonPin2 = 4;
 int relay1 = 6; // Plug the relay into Digital Pin 13
 int relay2 = 10; // Plug the relay into Digital Pin 13
-int fillDelay = 500; 
-
+int fillDelay = 300;  //set how long the fill relay is on
+int fillPause = 1000 ; // sets how long of a delay in between fill pulses 
 float currentD;
 int inCurrentD;
-int goalD=10; // m *100
+int goalD=10; // cm
 
-// Variables will change:
-int buttonState1 = 0;  // Variable for reading the pushbutton status
+// variables will change:
+int buttonState1 = 0;  // variable for reading the pushbutton status
 int buttonState2 = 0;
 
 #include <Wire.h>
@@ -21,10 +21,10 @@ MS5837 sensor;
 
 
 void setup() {
-  // Initialize the LED pin as an output:
+  // initialize the LED pin as an output:
   pinMode(relay1, OUTPUT);
   pinMode(relay2, OUTPUT);
-  // Initialize the pushbutton pin as an input:
+  // initialize the pushbutton pin as an input:
   pinMode(buttonPin1, INPUT);
   pinMode(buttonPin1, INPUT);
 
@@ -51,30 +51,31 @@ void setup() {
   // Uncomment the next line to force the sensor model to the MS5837_30BA.
   sensor.setModel(MS5837::MS5837_02BA);
 
-  sensor.setFluidDensity(996); // kg/m^3 (freshwater, 1029 for seawater)
+  sensor.setFluidDensity(996); // kg/m^3 (996 freshwater, 1029 for seawater)
   
 }
 
 void loop() {
-  // Read the state of the pushbutton value:
+  // read the state of the pushbutton value:
   buttonState1 = digitalRead(buttonPin1);
   buttonState2 = digitalRead(buttonPin2);
   sensor.read();
   currentD = sensor.depth();
-  inCurrentD = round(currentD * 100); // Units of m*100
+  inCurrentD = round(currentD*100); // rounds sensor data into units of cm
 
-  // Check if the pushbutton is pressed. If it is, the buttonState is HIGH:
+  // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
   if (buttonState1 == HIGH) {
-    goalD += 5; // Turn the relay on
+    goalD += 5; // Turn the relay on, units of cm
   } 
   if (buttonState2 == HIGH) {
-    goalD -= 5; // Turn the relay on
+    goalD -= 5; // Turn the relay on, units of cm
   } 
   if (inCurrentD<goalD) {
     digitalWrite(relay2, HIGH); // Turn the relay on
-    digitalWrite(relay1, LOW); // Turn the relay Off
     delay(fillDelay);
-  } else if (inCurrentD > goalD) {
+    digitalWrite(relay1, LOW); // Turn the relay Off
+    delay(fillPause);
+  } else if (inCurrentD>goalD) {
     // turn LED off:
     digitalWrite(relay1, HIGH); // Turn the relay On
     digitalWrite(relay2, LOW); // Turn the relay Off
@@ -86,8 +87,8 @@ void loop() {
   delay(30);
   
   Serial.println("Depth: ");
-  Serial.print(sensor.depth());
+  Serial.print(inCurrentD); //units of cm
   Serial.print("    Goal: ");
-  Serial.print(goalD);
+  Serial.print(goalD); //units of cm
 
 }
