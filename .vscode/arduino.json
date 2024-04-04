@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "COM15",
+    "sketch": "CustomArduSubReplacement\\Bottom_PiControl_2024\\Bottom_PiControl_2024.ino"
+}
