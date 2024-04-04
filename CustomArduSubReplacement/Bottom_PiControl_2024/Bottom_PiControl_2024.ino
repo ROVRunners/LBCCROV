@@ -134,7 +134,6 @@ void verify()
  */
 void loop()
 {
-
   // Wait for valid serial input.
   verify();
 
@@ -142,13 +141,15 @@ void loop()
   getValue(stringStream);
 
   // Convert the values to integers.
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 6; i++)
+  {
 
     speed[i] = abs(value[i].toInt()); // [0] = FV, [1] = RV, [2] = FR, [3] = FL, [4] = RR, [5] = RL
   }
 
   // Make sure stuff is within bounds.
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 6; i++)
+  {
     speed[i] = bound(speed[i], 1100, 1900);
   }
 
@@ -184,11 +185,10 @@ int bound(int val, int min, int max)
 void stop()
 {
 
-  analogWrite(PWMFV, HaltPWM);
-  analogWrite(PWMRV, HaltPWM);
-  analogWrite(PWMFR, HaltPWM);
-  analogWrite(PWMFL, HaltPWM);
-  analogWrite(PWMRR, HaltPWM);
-  analogWrite(PWMRL, HaltPWM);
+  // Set the speed of each motor.
+  for (int i = 0; i < 6; i++)
+  {
+    analogWrite(PWMArr[i], HaltPWM);
+  }
 
 }
