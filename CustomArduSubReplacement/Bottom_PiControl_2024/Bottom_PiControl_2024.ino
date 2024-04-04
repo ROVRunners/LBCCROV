@@ -1,74 +1,91 @@
-//This code controls two motors
+/**
+ * @file Bottom_PiControl_2024.ino
+ * @brief Control code for 6 motors.
+ * 
+ * This code controls 6 motors:
+ *   - Vertical: Front, Rear
+ *   - Horizontal: Front Right, Front Left, Rear Right, Rear Left
+ * 
+ * The code initializes the pins for each motor, reads serial input, extracts values from the input string,
+ * converts the values to integers, ensures that the values are within the specified bounds, and sets the speed
+ * of each motor accordingly. It also includes a delay to control the rate at which new input is checked.
+ * 
+ * The code also provides functions for clamping a value between a minimum and maximum range, and stopping all
+ * motor movements by setting the PWM values to a halt value.
+ */
+// This code controls 6 motors
 
-//motor A should be connected between A01 and A02
+//   Vertical: Front, Rear
+// Motor Front Vertical
+int PWMFV = 3;
 
-//motor B should be connected between B01 and B02
+// Motor Rear Vertical
+int PWMRV = 5;
 
-// 3, 5, 8, 9, 10, 11, 12
-// 1, 2, 4, 6, 7, 13
+//   Horizontal: Front Right, Front Left, Rear Right, Rear Left
+// Motor Front Right
+int PWMFR = 6;
 
-//The below code defines the output pins on the Arduino will hookup to specified pins on the HBridge
+// Motor Front Left
+int PWMFL = 9;
 
-int STBY = 10; //this will be the standby pin
+// Motor Rear Right
+int PWMRR = 10;
 
-//Motor A/B
+// Motor Rear Left
+int PWMRL = 11;
 
-int PWMA = 3; //Speed control
+// Array of PWM pins
+int PWMArr[] = {PWMFV, PWMRV, PWMFR, PWMFL, PWMRR, PWMRL};
 
-int AIN1 = 9; //Direction
+// Intermediaries for translation of incoming string.
+String stringStream = "";
+String value[] = {"0", "0", "0", "0", "0", "0"};
+int intStream[] = {0, 0, 0, 0, 0, 0};
+int speed[] = {0, 0, 0, 0, 0, 0};
 
-int AIN2 = 8; //Direction
+// Halt value for all motors.
+int HaltPWM = 1500;
 
-//Motor C
 
-int PWMB = 6; //Speed control
+/**
+ * @brief This function is called once at the start of the program.
+ * It is used to initialize variables, set pin modes, and perform any other setup tasks.
+ */
+void setup()
+{
 
-int BIN1 = 1; //Direction
+  // Up/down motor PWM outputs.
+  pinMode(PWMFV, OUTPUT); // Front Vertical
+  pinMode(PWMRV, OUTPUT); // Rear Vertical
 
-int BIN2 = 2; //Direction
+  // Front motor PWM outputs.
+  pinMode(PWMFR, OUTPUT); // Front Right
+  pinMode(PWMFL, OUTPUT); // Front Left
 
-//Motor D
+  // Rear motor PWM outputs.
+  pinMode(PWMRR, OUTPUT); // Rear Right
+  pinMode(PWMRL, OUTPUT); // Rear Left
 
-int PWMC = 5; //Speed control
-
-int CIN1 = 11; //Direction
-
-int CIN2 = 12; //Direction
-
-String value[] = {"0", "0", "0"};
-
- 
-
-void setup() {
-
-  pinMode(STBY, OUTPUT);
-
-  // Up/Down
-  pinMode(PWMA, OUTPUT);
-  pinMode(AIN1, OUTPUT);
-  pinMode(AIN2, OUTPUT);
-
-  // Forward/back
-  pinMode(PWMB, OUTPUT);
-  pinMode(BIN1, OUTPUT);
-  pinMode(BIN2, OUTPUT);
-
-  // Pivot
-  pinMode(PWMC, OUTPUT);
-  pinMode(CIN1, OUTPUT);
-  pinMode(CIN2, OUTPUT);
-
+  // Initialize serial communication.
   Serial.begin(19200);
   Serial.setTimeout(20);
 
 }
 
+
+/**
+ * Extracts values from a string and stores them in an array.
+ * The string should contain two values separated by a space.
+ * 
+ * @param data The input string from which values are extracted.
+ */
 void getValue(String data)
 {
   int count = 0;
   int priorEnd = 0;
 
-  for (int i = 0; i < data.length() - 1 && count < 2; i++)
+  for (int i = 0; i < data.length() - 1 && count < 5; i++)
   {
       if (data.charAt(i) == ' ')
       {
@@ -80,159 +97,98 @@ void getValue(String data)
   value[count] = data.substring(priorEnd, data.length());
 }
 
-String stringStream = "";
-int intStream[] = {0, 0, 0};
-int speed[] = {0, 0, 0};
-int direction[] = {0, 0, 0};
-int negator[] = {1, 1, 1};
 
-void loop(){
 
-  while (!Serial){
+/**
+ * Function to verify the serial input.
+ * 
+ * This function waits for serial input and verifies its length.
+ * If the length is less than or equal to 3, it prints "N/A 2" to the serial monitor.
+ */
+void verify()
+{
+
+  // Wait for serial input.
+  while (!Serial)
+  {
     Serial.println("N/A 1");
     delay(100);
   }
-
+  
+  // Read and varify its length.
   stringStream = Serial.readString();
-  if (stringStream.length() > 3) {
-    // stringStream.replace("\r\n", "");
-    // Serial.println(stringStream);
-  } else {
+  if (!(stringStream.length() > 3))
+  {
     Serial.println("N/A 2");
   }
-  String str = "";
+}
 
-  // for (int i = 0; i < 2; i++) {
-  //   stringStream.remove(stringStream.length() - 1);
-  // }
+
+/**
+ * @brief The main loop of the program.
+ * 
+ * This function is responsible for continuously executing the main logic of the program.
+ * It waits for valid serial input, extracts values from the input string, converts the values to integers,
+ * ensures that the values are within the specified bounds, and sets the speed of each motor accordingly.
+ * It also includes a delay to control the rate at which new input is checked.
+ */
+void loop()
+{
+
+  // Wait for valid serial input.
+  verify();
+
+  // Extract values from the string. (basically an inefficient .split() function)
   getValue(stringStream);
 
-  for (int i = 0; i < 3; i++) {
+  // Convert the values to integers.
+  for (int i = 0; i < 6; i++) {
 
-    intStream[i] = value[i].toInt(); // [0] = up/down, [1] = forward/back, [2] = pivot
-    speed[i] = abs(intStream[i]);
-    direction[i] = negator[i] ? intStream[i] >= 0 : -negator[i];
-    str += String(i) + ": " + String(speed[i]) + " ----- ";
-    // Serial.print(": ");
-    // Serial.print(intStream[i]);
-    // Serial.print(" ");
-    // Serial.print(speed[i]);
-    // Serial.print(" ");
-    // Serial.print(direction[i]);
-    // Serial.print(" ----- ");
+    speed[i] = abs(value[i].toInt()); // [0] = FV, [1] = RV, [2] = FR, [3] = FL, [4] = RR, [5] = RL
   }
-  Serial.println(str);
 
-  move(0, speed[0], direction[0]); // Up
-  move(1, speed[1], direction[1]); // Forward
-  move(2, speed[2], direction[2]); // Pivot
+  // Make sure stuff is within bounds.
+  for (int i = 0; i < 6; i++) {
+    speed[i] = bound(speed[i], 1100, 1900);
+  }
 
+  // Set the speed of each motor.
+  for (int i = 0; i < 6; i++)
+  {
+    analogWrite(PWMArr[i], speed[i]);
+  }
+
+  // It only checks for new input every 50ms, so wait some of that time.
   delay(20);
 
 }
 
 
-int bound(int val, int min, int max) {
+/**
+ * Clamps a value between a minimum and maximum range.
+ *
+ * @param val The value to be clamped.
+ * @param min The minimum value of the range.
+ * @param max The maximum value of the range.
+ * @return The clamped value.
+ */
+int bound(int val, int min, int max)
+{
   return max(min(val, max), min);
 }
 
- 
 
-void move(int motor, int spd, int dir) {
+/**
+ * Stops all motor movements by setting the PWM values to a halt value.
+ */
+void stop()
+{
 
-//Move specific motor at spd and direction
-
-//motor: 0 for B 1 for A
-
-//spd: 0 is off, and 255 is full spd
-
-//direction: 0 clockwise, 1 counter-clockwise
-
-  digitalWrite(STBY, HIGH); //disable standby
-
-  boolean inPin1 = LOW;
-
-  boolean inPin2 = HIGH;
-
-  if(dir == 1){
-
-    inPin1 = HIGH;
-
-    inPin2 = LOW;
-
-  }
-
-  switch (motor) {
-    case (0):
-      digitalWrite(AIN1, inPin1);
-      digitalWrite(AIN2, inPin2);
-      analogWrite(PWMA, spd);
-      break;
-
-    case (1):
-      digitalWrite(BIN1, inPin1);
-      digitalWrite(BIN2, inPin2);
-      analogWrite(PWMB, spd);
-      break;
-
-    case (2):
-      digitalWrite(CIN1, inPin1);
-      digitalWrite(CIN2, inPin2);
-      analogWrite(PWMC, spd);
-      // Serial.print(" ## " + String(inPin1) + ", " + String(inPin2) + ", " + String(spd) + " ## ");
-      break;
-
-  }
-
-}
-
-
-// int[] getValue(String data, char separator, int ExpectedItemCount)
-// {
-//   // Read each command pair 
-//   char* command = strtok(input, "&");
-//   String results[ExpectedItemCount];
-//   int count = 0;
-
-//   while (command != 0 && count < ExpectedItemCount)
-//   {
-//       // Split the command in two values
-//       char* separator = strchr(command, ':');
-//       if (separator != 0)
-//       {
-//           // Actually split the string in 2: replace ':' with 0
-//           *separator = 0;
-//           int servoId = atoi(command);
-//           ++separator;
-//           int position = atoi(separator);
-
-//           // Do something with servoId and position
-//       }
-//       // Find the next command in input string
-//       command = strtok(0, "&");
-//   }
-// }
-
-// String getValue(String data, char separator, int index)
-// {
-//     int found = 0;
-//     int strIndex[] = { 0, -1 };
-//     int maxIndex = data.length() - 1;
-
-//     for (int i = 0; i <= maxIndex && found <= index; i++) {
-//         if (data.charAt(i) == separator || i == maxIndex) {
-//             found++;
-//             strIndex[0] = strIndex[1] + 1;
-//             strIndex[1] = (i == maxIndex) ? i+1 : i;
-//         }
-//     }
-//     return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
-// }
-
-void stop(){
-
-//enable standby 
-
-  digitalWrite(STBY, LOW);
+  analogWrite(PWMFV, HaltPWM);
+  analogWrite(PWMRV, HaltPWM);
+  analogWrite(PWMFR, HaltPWM);
+  analogWrite(PWMFL, HaltPWM);
+  analogWrite(PWMRR, HaltPWM);
+  analogWrite(PWMRL, HaltPWM);
 
 }
