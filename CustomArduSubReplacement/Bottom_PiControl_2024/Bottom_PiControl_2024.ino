@@ -6,6 +6,8 @@
  *   - Vertical: Front, Rear
  *   - Horizontal: Front Right, Front Left, Rear Right, Rear Left
  * 
+ * The serial input string format is as follows: "FV RV FR FL RR RL"
+ * 
  * The code initializes the pins for each motor, reads serial input, extracts values from the input string,
  * converts the values to integers, ensures that the values are within the specified bounds, and sets the speed
  * of each motor accordingly. It also includes a delay to control the rate at which new input is checked.
