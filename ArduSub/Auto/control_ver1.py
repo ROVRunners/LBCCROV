@@ -23,7 +23,7 @@ master.wait_heartbeat()
 def set_rc_channel_pwm(channel_id, pwm=0):
     # [-1,1] -> [1100,1900]
     pwm = int(400*pwm + 1500)
-    
+
     """ Set RC channel pwm value
     Args:
         channel_id (TYPE): Channel ID

@@ -1,17 +1,17 @@
 /**
- * @file Bottom_PiControl_2024.ino
+ * @file Arduino_Bottom_PiControl_2024.ino
  * @brief Control code for 6 motors.
- * 
+ *
  * This code controls 6 motors:
  *   - Vertical: Front, Rear
  *   - Horizontal: Front Right, Front Left, Rear Right, Rear Left
- * 
+ *
  * The serial input string format is as follows: "FV RV FR FL RR RL"
- * 
+ *
  * The code initializes the pins for each motor, reads serial input, extracts values from the input string,
  * converts the values to integers, ensures that the values are within the specified bounds, and sets the speed
  * of each motor accordingly. It also includes a delay to control the rate at which new input is checked.
- * 
+ *
  * The code also provides functions for clamping a value between a minimum and maximum range, and stopping all
  * motor movements by setting the PWM values to a halt value.
  */
