@@ -1,0 +1,15 @@
+Command received: test.</br>Invalid command. Type 'help' for a list of available commands.
+Command received: arm.</br>ROV armed.
+Command received: help.</br>Available commands:
+                        </br>arm: Allow control inputs.
+                        </br>clear: Clear the console log.
+                        </br>disarm: Disallow control inputs.
+                        </br>help: Display this help message.
+                        
+Command received: help.</br>Available commands:
+                        </br>arm: Allow control inputs.
+                        </br>clear: Clear the console log.
+                        </br>disarm: Disallow control inputs.
+                        </br>help: Display this help message.
+                        
+Command received: test.</br>Invalid command. Type 'help' for a list of available commands.
