@@ -15,27 +15,31 @@
  * The code also provides functions for clamping a value between a minimum and maximum range, and stopping all
  * motor movements by setting the PWM values to a halt value.
  */
-// This code controls 6 motors
+#include <Servo.h>
 
 //   Vertical: Front, Rear
 // Motor Front Vertical
 int PWMFV = 3;
-
+Servo servoFV;
 // Motor Rear Vertical
 int PWMRV = 5;
-
+Servo servoRV;
 //   Horizontal: Front Right, Front Left, Rear Right, Rear Left
 // Motor Front Right
 int PWMFR = 6;
-
+Servo servoFR;
 // Motor Front Left
 int PWMFL = 9;
-
+Servo servoFL;
 // Motor Rear Right
 int PWMRR = 10;
-
+Servo servoRR;
 // Motor Rear Left
 int PWMRL = 11;
+Servo servoRL;
+
+// Array of servos
+Servo servoArr[] = {servoFV, servoRV, servoFR, servoFL, servoRR, servoRL};
 
 // Array of PWM pins
 int PWMArr[] = {PWMFV, PWMRV, PWMFR, PWMFL, PWMRR, PWMRL};
@@ -57,21 +61,24 @@ int HaltPWM = 1500;
 void setup()
 {
 
-  // Up/down motor PWM outputs.
-  pinMode(PWMFV, OUTPUT); // Front Vertical
-  pinMode(PWMRV, OUTPUT); // Rear Vertical
-
-  // Front motor PWM outputs.
-  pinMode(PWMFR, OUTPUT); // Front Right
-  pinMode(PWMFL, OUTPUT); // Front Left
-
-  // Rear motor PWM outputs.
-  pinMode(PWMRR, OUTPUT); // Rear Right
-  pinMode(PWMRL, OUTPUT); // Rear Left
-
   // Initialize serial communication.
   Serial.begin(19200);
   Serial.setTimeout(20);
+
+  Serial.println("Setting up motors.");
+
+  for (int i = 0; i < 6; i++)
+  {
+    servoArr[i].attach(PWMArr[i]);
+    servoArr[i].writeMicroseconds(HaltPWM);
+  }
+
+  Serial.println("Motors set up.");
+  Serial.println("Waiting to complete initialization.");
+
+  delay(7000);
+
+  Serial.println("Initialization complete.");
 
 }
 
@@ -158,7 +165,7 @@ void loop()
   // Set the speed of each motor.
   for (int i = 0; i < 6; i++)
   {
-    analogWrite(PWMArr[i], speed[i]);
+    servoArr[i].writeMicroseconds(speed[i]);
   }
 
   // It only checks for new input every 50ms, so wait some of that time.
@@ -186,11 +193,9 @@ int bound(int val, int min, int max)
  */
 void stop()
 {
-
   // Set the speed of each motor.
   for (int i = 0; i < 6; i++)
   {
-    analogWrite(PWMArr[i], HaltPWM);
+    servoArr[i].writeMicroseconds(HaltPWM);
   }
-
 }

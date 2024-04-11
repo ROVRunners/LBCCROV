@@ -1,54 +1,47 @@
-FORWARD = LEFT_Y
-#
+FORWARD/BACKWARD = LEFT_Y
+LEFT/RIGHT = LEFT_X
+UP/DOWN = TRIGGERS
+YAW = RIGHT_X
+PITCH = RIGHT_Y
+HALT = START
+
+####################
 Instructions:
 
 Modify the above keys as much as you wish.
-Capitalization does not matter, everything is converted to lower anyway.
+Capitalization does not matter, everything is converted to upper anyway.
 
-Example buttons:
+Add custom values on the left if you wish, but the following are required:
+    FORWARD/BACKWARD
+    LEFT/RIGHT
+    UP/DOWN
+    YAW
+    PITCH
+    HALT
 
-space
-w
-a
-s
-d
-shift
-enter
-ctrl
-up      #(arrow key)
-down    #(arrow key)
-left    #(arrow key)
-right   #(arrow key)
-1
-2
-3
-4
-5
-numpad 1
-numpad 2
-numpad 3
-numpad 4
-numpad 5
-[
-]
-\
-/
-,
-.
--
-=
-end
-esc
-f1
-f4
-f10
-f12
+####################
 
-Combinations of keys are also possible as shown below:
+Available buttons:
+    A
+    B
+    X
+    Y
+    START
+    SELECT
+    DPAD_DOWN
+    DPAD_LEFT
+    DPAD_UP
+    DPAD_RIGHT
+    LEFT_BUMPER
+    RIGHT_BUMPER
 
-shift+enter
-ctrl+shift+s
-ctrl+alt+delete
-alt+f4
+Available axes:
+    LEFT_X
+    LEFT_Y
+    RIGHT_X
+    RIGHT_Y
+    TRIGGERS
 
-It can NOT, however, reliably detect the power button, unfortunately...
+
+
+
