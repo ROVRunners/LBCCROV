@@ -4,6 +4,7 @@ import os
 from time import sleep
 import socket
 import serial
+import CustomArduSubReplacement.JankTempSetupBypassingPixhawkWithArduino.Surface_Python.input_handler as input_handler
 
 # Set the serial port names for your Arduino.
 PORT = 'COM3' # Replace with the correct port for the Arduino.
