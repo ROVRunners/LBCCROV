@@ -4,8 +4,11 @@
 
 import argparse
 import sys
+
 import terminal_listener
 import socket_handler
+import controller_input
+
 from utilities.personal_functions import *
 
 default_ip = "192.168.1.2"
@@ -25,17 +28,27 @@ class MainSystem:
                 Defaults to "5600".
         """
         self.terminal = terminal_listener.TerminalListener(self)
-        self.packet_sender = socket_handler.SocketHandler(self, pi_ip, port)
+        self.socket_handler = socket_handler.SocketHandler(self, pi_ip, port)
+        self.controller = controller_input.Controller(self)
+
+        self.sensor_data = {}
+        self.inputs = {}
+        self.command_buffer = []
+
         self.run = True
 
+    def main_loop(self) -> None:
+        self.inputs = self.controller.get_inputs()
+        # self.sensor_data = self.socket_handler.get_sensor_data()
+        if self.terminal.check_for_input():
+            self.command_buffer.append(self.terminal.get_input_value())
+        # Hand off for modification
+        # Handle commands
+        # self.socket_handler.send_data(data)
+        # Display frames
 
-    def main_loop() -> None:
-        read_input()
-        
-        pass
-
-
-    def shutdown() -> None:
+    def shutdown(self) -> None:
+        self.socket_handler.shutdown()
         sys.exit()
 
 

@@ -1,5 +1,5 @@
 {
     "board": "arduino:avr:uno",
     "port": "COM15",
-    "sketch": "CustomArduSubReplacement\\Bottom_PiControl_2024\\Bottom_PiControl_2024.ino"
+    "sketch": "CustomArduSubReplacement\\JankTempSetupBypassingPixhawkWithArduino\\Bottom_PiControl_2024\\Arduino_Bottom_PiControl_2024\\Arduino_Bottom_PiControl_2024.ino"
 }

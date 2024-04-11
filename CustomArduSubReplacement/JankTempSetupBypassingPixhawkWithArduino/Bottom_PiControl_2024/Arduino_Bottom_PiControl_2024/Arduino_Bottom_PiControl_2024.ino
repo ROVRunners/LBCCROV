@@ -154,7 +154,12 @@ void loop()
   {
 
     speed[i] = abs(value[i].toInt()); // [0] = FV, [1] = RV, [2] = FR, [3] = FL, [4] = RR, [5] = RL
+
+    Serial.print(speed[i]);
+    Serial.print(" ");
+
   }
+  Serial.println("\n");
 
   // Make sure stuff is within bounds.
   for (int i = 0; i < 6; i++)
