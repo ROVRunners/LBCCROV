@@ -46,9 +46,9 @@ int PWMArr[] = {PWMFV, PWMRV, PWMFR, PWMFL, PWMRR, PWMRL};
 
 // Intermediaries for translation of incoming string.
 String stringStream = "";
-String value[] = {"0", "0", "0", "0", "0", "0"};
-int intStream[] = {0, 0, 0, 0, 0, 0};
-int speed[] = {0, 0, 0, 0, 0, 0};
+String value[] = {"1500", "1500", "1500", "1500", "1500", "1500"};
+int intStream[] = {1500, 1500, 1500, 1500, 1500, 1500};
+int speed[] = {1500, 1500, 1500, 1500, 1500, 1500};
 
 // Halt value for all motors.
 int HaltPWM = 1500;
@@ -64,7 +64,7 @@ void setup()
 {
 
   // Initialize serial communication.
-  Serial.begin(115200);
+  Serial.begin(19200);
   Serial.setTimeout(20);
 
   Serial.println("Setting up motors.");
@@ -98,7 +98,7 @@ void getValue(String data)
   int count = 0;
   int priorEnd = 0;
 
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < data.length(); i++)
   {
       if (data.charAt(i) == ' ')
       {
@@ -108,6 +108,7 @@ void getValue(String data)
       }
   }
   value[count] = data.substring(priorEnd, data.length());
+  // Serial.println(data + "\n" + value[0] + value[1] + value[2] + value[3] + value[4] + value[5] + count);
 }
 
 
@@ -128,13 +129,13 @@ int verify()
     delay(100);
     if (millis() - timeSince >= 1000)
     {
-      stop();
+      // stop();
     }
   }
   
   if (millis() - timeSince >= 1000)
   {
-    stop();
+    // stop();
   }
   
   // Read and varify its length.
@@ -191,7 +192,7 @@ void loop()
   }
   // If there was no input, sleep.
   else {
-    delay(20);
+    // delay(20);
   }
 
 }
@@ -207,7 +208,9 @@ void loop()
  */
 int bound(int val, int min, int max)
 {
+  if (val < min - 100) return 1500;
   return max(min(val, max), min);
+  // return val;
 }
 
 
